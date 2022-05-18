@@ -28,23 +28,25 @@ public class ServerUtils {
     private AtomicInteger portIndex = new AtomicInteger(40000);
     private Random random = new Random();
 
-    public ServerUtils() {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                try {
-                    for (File file : baseDirs) {
-                        if (file.exists()) {
-                            UtilAll.deleteFile(file);
+    public ServerUtils(boolean deleteFilesWhenShutdown) {
+        if (deleteFilesWhenShutdown) {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        for (File file : baseDirs) {
+                            if (file.exists()) {
+                                UtilAll.deleteFile(file);
+                            }
                         }
+                    } catch (Exception ignored) {
                     }
-                } catch (Exception ignored) {
                 }
-            }
-        });
+            });
+        }
     }
-    public ServerUtils(String rootBaseDir, String baseDirPrefix, String brokerNamePrefix) {
-        this();
+    public ServerUtils(boolean deleteFilesWhenShutdown, String rootBaseDir, String baseDirPrefix, String brokerNamePrefix) {
+        this(deleteFilesWhenShutdown);
         if (rootBaseDir != null) {
             this.rootBaseDir = rootBaseDir;
         }
