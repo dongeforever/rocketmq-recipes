@@ -11,6 +11,10 @@
 
   <name>The recipes for rocketmq</name>
 
+  <properties>
+    <rocketmq.version>4.9.3</rocketmq.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -26,6 +30,16 @@
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
       <version>0.9.11</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rocketmq</groupId>
+      <artifactId>rocketmq-broker</artifactId>
+      <version>${rocketmq.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rocketmq</groupId>
+      <artifactId>rocketmq-namesrv</artifactId>
+      <version>${rocketmq.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
