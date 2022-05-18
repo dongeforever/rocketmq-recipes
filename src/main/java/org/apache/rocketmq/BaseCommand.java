@@ -20,6 +20,8 @@ public abstract class BaseCommand {
 
     public abstract void doCommandInner();
 
+    public abstract String getCmdName();
+
     public boolean needWait() {
         return false;
     }

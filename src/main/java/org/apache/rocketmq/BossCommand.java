@@ -5,6 +5,8 @@ import com.beust.jcommander.ParameterDescription;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +16,14 @@ public class BossCommand {
 
     public static void main(String args[]) throws Exception {
         Map<String, BaseCommand> commands = new HashMap<>();
-        commands.put(Echo.class.getSimpleName(), new Echo());
-
+        for (Class cmdClass: findClasses()) {
+            BaseCommand command = (BaseCommand) cmdClass.newInstance();
+            if (command.getCmdName() == null) {
+                commands.put(cmdClass.getSimpleName(), command);
+            } else {
+                commands.put(command.getCmdName(), command);
+            }
+        }
         JCommander.Builder builder = JCommander.newBuilder();
         for (String cmd : commands.keySet()) {
             builder.addCommand(cmd, commands.get(cmd));
@@ -56,5 +64,10 @@ public class BossCommand {
                 jc.usage();
             }
         }
+    }
+
+    private static Set<Class<? extends BaseCommand>> findClasses() {
+        Reflections reflections = new Reflections(BaseCommand.class.getPackage().getName());
+        return reflections.getSubTypesOf(BaseCommand.class);
     }
 }
