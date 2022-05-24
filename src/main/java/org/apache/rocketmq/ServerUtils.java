@@ -1,5 +1,6 @@
 package org.apache.rocketmq;
 
+import com.alibaba.fastjson.JSON;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,22 +74,22 @@ public class ServerUtils {
     }
 
     public Properties getDefaultNamesrvProperties(String baseDir) {
+        //All the value should be string
         Properties properties = new Properties();
         properties.put("kvConfigPath", baseDir + SEP + "namesrv" + SEP + "kvConfig.json");
         properties.put("configStorePath", baseDir + SEP + "namesrv" + SEP + "namesrv.properties");
-        properties.put("listenPort", nextPort());
+        properties.put("listenPort", nextPort() + "");
         return properties;
     }
 
     public Properties getDefaultBrokerProperties(String baseDir, String nsAddr) {
+        //All the value should be string
         Properties properties = new Properties();
         properties.put("brokerClusterName", "DefaultTestCluster");
         properties.put("brokerName", brokerNamePrefix  + brokerIndex.getAndIncrement());
         properties.put("brokerIP1", "127.0.0.1");
         properties.put("brokerIP2", "127.0.0.1");
         properties.put("namesrvAddr", nsAddr);
-        properties.put("enablePropertyFilter", "true");
-        properties.put("traceTopicEnable", "true");
         properties.put("storePathRootDir", baseDir);
         properties.put("storePathCommitLog", baseDir + SEP + "commitlog");
         //100M
@@ -97,12 +98,18 @@ public class ServerUtils {
         properties.put("mappedFileSizeConsumeQueue", "600000");
         //5M
         properties.put("mappedFileSizeConsumeQueueExt", "5000000");
-        properties.put("maxIndexNum", 1000);
-        properties.put("maxHashSlotNum", 1000 * 3);
-
-        properties.put("listenPort", nextPort());
-        properties.put("haListenPort", nextPort());
-
+        properties.put("maxIndexNum", "1000");
+        properties.put("maxHashSlotNum", "" + 1000 * 3);
+        //port
+        properties.put("listenPort", nextPort() + "");
+        properties.put("haListenPort", nextPort() + "");
+        //enable auto create
+        properties.put("autoCreateSubscriptionGroup", "true");
+        properties.put("autoCreateTopicEnable", "true");
+        //enable trace
+        properties.put("traceTopicEnable", "true");
+        //enable Property Filter
+        properties.put("enablePropertyFilter", "true");
         return properties;
     }
 
@@ -119,7 +126,11 @@ public class ServerUtils {
             MixAll.properties2Object(properties, namesrvConfig);
             MixAll.properties2Object(properties, nameServerNettyServerConfig);
             NamesrvController namesrvController = new NamesrvController(namesrvConfig, nameServerNettyServerConfig);
+            if (!namesrvController.initialize()) {
+                throw new RuntimeException("Init failed");
+            }
             namesrvController.start();
+            namesrvFuture.complete(namesrvController);
         } catch (Exception e) {
             namesrvFuture.completeExceptionally(e);
         }
@@ -142,13 +153,29 @@ public class ServerUtils {
             MixAll.properties2Object(properties, nettyServerConfig);
             MixAll.properties2Object(properties, nettyClientConfig);
             MixAll.properties2Object(properties, storeConfig);
-
+            System.out.println("BrokerConfig: " + JSON.toJSONString(brokerConfig));
+            System.out.println(JSON.toJSONString(nettyServerConfig));
             BrokerController brokerController = new BrokerController(brokerConfig, nettyServerConfig, nettyClientConfig, storeConfig);
+            if (!brokerController.initialize()) {
+                throw new RuntimeException("Init failed");
+            }
             brokerController.start();
             brokerFuture.complete(brokerController);
         } catch (Throwable t) {
             brokerFuture.completeExceptionally(t);
         }
         return brokerFuture;
+    }
+
+    public String getNsAddr(NamesrvController... nss) {
+        StringBuilder nsAddr = new StringBuilder();
+        for (NamesrvController ns : nss) {
+            if (nsAddr.length() == 0) {
+                nsAddr.append("127.0.0.1:").append(ns.getNettyServerConfig().getListenPort());
+            } else {
+                nsAddr.append(";").append("127.0.0.1:").append(ns.getNettyServerConfig().getListenPort());
+            }
+        }
+        return nsAddr.toString();
     }
 }

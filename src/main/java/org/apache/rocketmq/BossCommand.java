@@ -21,7 +21,9 @@ public class BossCommand {
             if (command.getCmdName() == null) {
                 commands.put(cmdClass.getSimpleName(), command);
             } else {
-                commands.put(command.getCmdName(), command);
+                for (String name : command.getCmdName()) {
+                    commands.put(name, command);
+                }
             }
         }
         JCommander.Builder builder = JCommander.newBuilder();

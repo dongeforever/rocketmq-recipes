@@ -12,15 +12,10 @@
   <name>The recipes for rocketmq</name>
 
   <properties>
-    <rocketmq.version>4.9.3</rocketmq.version>
+    <rocketmq.version>4.9.4-SNAPSHOT</rocketmq.version>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.6</version>
-    </dependency>
     <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
