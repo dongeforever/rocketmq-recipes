@@ -3,7 +3,6 @@ package org.apache.rocketmq;
 import com.beust.jcommander.Parameters;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import org.apache.rocketmq.broker.BrokerController;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
@@ -20,12 +19,11 @@ import org.apache.rocketmq.namesrv.NamesrvController;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.tools.command.MQAdminStartup;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Parameters(commandDescription = "This is the echo")
 public class R001_QueryAndTrace extends BaseCommand {
 
-    public static Logger logger = LoggerFactory.getLogger(R001_QueryAndTrace.class);
+    public static Logger logger = RecipesUtils.getRecipesLog();
 
     private ServerUtils serverUtils = new ServerUtils(true);
 
