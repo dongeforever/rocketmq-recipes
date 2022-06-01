@@ -10,9 +10,17 @@
         </encoder>
     </appender>
 
+    <appender name="RECIPES" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
     <logger name="recipes" additivity="false">
         <level value="INFO"/>
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="RECIPES"/>
     </logger>
 
     <!-- 日志输出级别 -->

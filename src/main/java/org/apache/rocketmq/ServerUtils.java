@@ -153,8 +153,6 @@ public class ServerUtils {
             MixAll.properties2Object(properties, nettyServerConfig);
             MixAll.properties2Object(properties, nettyClientConfig);
             MixAll.properties2Object(properties, storeConfig);
-            System.out.println("BrokerConfig: " + JSON.toJSONString(brokerConfig));
-            System.out.println(JSON.toJSONString(nettyServerConfig));
             BrokerController brokerController = new BrokerController(brokerConfig, nettyServerConfig, nettyClientConfig, storeConfig);
             if (!brokerController.initialize()) {
                 throw new RuntimeException("Init failed");

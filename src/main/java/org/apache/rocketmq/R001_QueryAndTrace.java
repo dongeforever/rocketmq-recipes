@@ -19,11 +19,17 @@ import org.apache.rocketmq.namesrv.NamesrvController;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.tools.command.MQAdminStartup;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.apache.rocketmq.RecipesUtils.COMMAND_PREFIX;
+import static org.apache.rocketmq.RecipesUtils.RECIPES_LOG;
+import static org.apache.rocketmq.RecipesUtils.runCMD;
 
 @Parameters(commandDescription = "This is the echo")
 public class R001_QueryAndTrace extends BaseCommand {
 
-    public static Logger logger = RecipesUtils.getRecipesLog();
+
+    public static Logger logger = LoggerFactory.getLogger(R001_QueryAndTrace.class);
 
     private ServerUtils serverUtils = new ServerUtils(true);
 
@@ -36,17 +42,17 @@ public class R001_QueryAndTrace extends BaseCommand {
         String clusterName = brokerController.getBrokerConfig().getBrokerClusterName();
         brokerController.registerBrokerAll(true, false, true);
         String topic = "TopicTest";
-        MQAdminStartup.main(new String[]{
-            "updateTopic", "-c", clusterName, "-t", topic
-        });
+
+        String CMD001 = String.format("updateTopic -c %s -t %s", clusterName, topic);
+        RECIPES_LOG.info("{} {}", COMMAND_PREFIX, CMD001);
+        runCMD(CMD001);
+
         brokerController.registerBrokerAll(true, false, true);
         UtilAll.sleep(3000);
-        DefaultMQProducer producer = new DefaultMQProducer("ProducerGroupName",true);
-        producer.setNamesrvAddr(nsAddr);
-        producer.start();
-        Message msg = new Message(topic, "TagA", "OrderID188", "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
-        SendResult sendResult = producer.send(msg);
-        System.out.printf("%s%n", sendResult);
+
+        String CMD002 = String.format("sendMessage -t %s -p \"%s\"", topic, "HelloWorld!");
+        RECIPES_LOG.info("{} {}", COMMAND_PREFIX, CMD002);
+        runCMD(CMD002);
 
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("CID_JODIE_1",true);
         consumer.subscribe(topic, "*");
@@ -60,7 +66,6 @@ public class R001_QueryAndTrace extends BaseCommand {
             }
         });
         consumer.start();
-
         Thread.sleep(1000);
     }
 
