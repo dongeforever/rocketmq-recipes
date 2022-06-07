@@ -1,6 +1,5 @@
 package org.apache.rocketmq;
 
-import com.alibaba.fastjson.JSON;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
