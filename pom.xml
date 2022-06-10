@@ -48,6 +48,11 @@
       <version>1.2.69_noneautotype</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jline</groupId>
+      <artifactId>jline</artifactId>
+      <version>3.21.0</version>
+    </dependency>
   </dependencies>
 
   <build>
